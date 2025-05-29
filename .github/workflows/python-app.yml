@@ -37,3 +37,9 @@ jobs:
     - name: Test with pytest
       run: |
         pytest
+    - name: Create files and directories
+      run: |
+        echo "Hello from GitHub Actions!" > my_output.txt
+        mkdir my_data_directory
+        echo "This is some data." > my_data_directory/data.log
+        touch temporary_file.tmp
