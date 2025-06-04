@@ -1,73 +1,18 @@
-name: Python application
-
-on:
-  push:
-    branches: [ "main" ]
-  pull_request:
-    branches: [ "main" ]
-
-permissions:
-  contents: read
-
+name: GitHub Actions Demo
+run-name: ${{ github.actor }} is testing out GitHub Actions 🚀
+on: [push]
 jobs:
-  # 第一個 Job：負責程式碼簽出、設定 Python、安裝依賴和 Lint 檢查
-  build_and_lint:
-    runs-on: self-hosted
-
+  Explore-GitHub-Actions:
+    runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
-        name: Checkout repository code
-
-      - name: Set up Python 3.12
-        uses: actions/setup-python@v3
-        with:
-          python-version: "3.12"
-
-      - name: Install dependencies
+      - run: echo "🎉 The job was automatically triggered by a ${{ github.event_name }} event."
+      - run: echo "🐧 This job is now running on a ${{ runner.os }} server hosted by GitHub!"
+      - run: echo "🔎 The name of your branch is ${{ github.ref }} and your repository is ${{ github.repository }}."
+      - name: Check out repository code
+        uses: actions/checkout@v4
+      - run: echo "💡 The ${{ github.repository }} repository has been cloned to the runner."
+      - run: echo "🖥️ The workflow is now ready to test your code on the runner."
+      - name: List files in the repository
         run: |
-          python -m pip install --upgrade pip
-          pip install flake8 pytest # 安裝 flake8 和 pytest
-          if [ -f requirements.txt ]; then pip install -r requirements.txt; fi # 安裝專案依賴
-
-      - name: Lint with flake8
-        run: |
-          # 停止建置：如果存在 Python 語法錯誤或未定義的名稱
-          flake8 . --count --select=E9,F63,F7,F82 --show-source --statistics
-          # exit-zero 將所有錯誤視為警告。GitHub 編輯器寬度為 127 個字元
-          flake8 . --count --exit-zero --max-complexity=10 --max-line-length=127 --statistics
-
-      - name: Upload Repository Code
-        uses: actions/upload-artifact@v4
-        with:
-          name: repository-code # Artifact 的名稱
-          path: .              # 上傳整個工作目錄的內容
-          # 注意：Runner 的內部工作目錄 (例如 _work/) 通常會被排除在 Artifact 之外，防止無限遞迴。
-          # 對於整個工作目錄，通常不需要額外指定排除。
-
-  # 第二個 Job：負責運行測試
-  run_tests:
-    runs-on: self-hosted
-    needs: build_and_lint # 設定這個 Job 依賴於 build_and_lint Job
-
-    steps:
-      - name: Download Repository Code
-        uses: actions/download-artifact@v4
-        with:
-          name: repository-code # 指定要下載的 Artifact 名稱
-          path: .              # 下載到當前工作目錄
-
-      # 因為沒有使用 venv，這個 Job 仍需重新設定 Python 環境並安裝測試工具和依賴
-      - name: Set up Python 3.12 for tests
-        uses: actions/setup-python@v3
-        with:
-          python-version: "3.12"
-
-      - name: Install test dependencies (again)
-        run: |
-          python -m pip install --upgrade pip
-          pip install pytest # 只需要安裝 pytest，因為 flake8 在上一個 Job 已經完成了
-          if [ -f requirements.txt ]; then pip install -r requirements.txt; fi # 重新安裝專案依賴
-
-      - name: Test with pytest
-        run: |
-          pytest
+          ls ${{ github.workspace }}
+      - run: echo "🍏 This job's status is ${{ job.status }}."
